@@ -1,14 +1,9 @@
 package br.com.tcon.coracaopapel.modelo.dominio;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -21,9 +16,6 @@ public class Cidade extends EntidadeDominio {
 	@ManyToOne
 	@JoinColumn(name = "id_estado")
 	private Estado estado;
-//	
-//	@OneToMany(mappedBy = "cidade", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//	private List<Endereco> endereco;
 
 	public String getDescricao() {
 		return descricao;
@@ -41,11 +33,4 @@ public class Cidade extends EntidadeDominio {
 		this.estado = estado;
 	}
 
-//	public List<Endereco> getEndereco() {
-//		return endereco;
-//	}
-//
-//	public void setEndereco(List<Endereco> endereco) {
-//		this.endereco = endereco;
-//	}
 }

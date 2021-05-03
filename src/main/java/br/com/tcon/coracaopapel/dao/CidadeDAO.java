@@ -62,7 +62,7 @@ public class CidadeDAO implements IDAO {
 			Cidade cidade = (Cidade) listaResultadoQuery.get(i);
 			cidade.getEstado();
 			entityManager.detach(cidade);
-//			cidade.getEstado().setCidades(null);
+			cidade.getEstado().setPais(null);
 //			cidade.setEndereco(null);
 			listaRetorno.add(cidade);
 		}

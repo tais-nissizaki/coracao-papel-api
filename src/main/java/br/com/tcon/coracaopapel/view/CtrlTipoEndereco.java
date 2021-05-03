@@ -22,7 +22,7 @@ public class CtrlTipoEndereco {
 
 	@GetMapping
 	@ResponseBody
-	public List<TipoEndereco> obterTodosTiposDocumento() {
+	public List<TipoEndereco> obterTodosTiposEndereco() {
 		return (List<TipoEndereco>) consultarTipoEnderecoCommand.executar(new TipoEndereco());
 	}
 }

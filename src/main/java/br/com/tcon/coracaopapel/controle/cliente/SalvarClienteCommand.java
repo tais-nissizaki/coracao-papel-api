@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import br.com.tcon.coracaopapel.controle.ICommand;
 import br.com.tcon.coracaopapel.controle.IFachada;
-import br.com.tcon.coracaopapel.modelo.dominio.Cliente;
 import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 
 @Component

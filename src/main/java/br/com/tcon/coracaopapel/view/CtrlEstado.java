@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.tcon.coracaopapel.controle.estado.ConsultarEstadoCommand;
@@ -20,9 +21,9 @@ public class CtrlEstado {
 	private ConsultarEstadoCommand consultarEstadocCommand;
 	
 	
-	@GetMapping
+	@GetMapping("pais/{idPais}")
 	@ResponseBody
-	public List<Estado> obterTodosEstados() {
+	public List<Estado> obterTodosEstados(@PathVariable(name = "idPais") Integer idPais	) {
 		return (List<Estado>) consultarEstadocCommand.executar(new Estado());
 	}
 	

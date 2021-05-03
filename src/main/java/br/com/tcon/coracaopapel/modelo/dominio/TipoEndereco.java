@@ -1,12 +1,7 @@
 package br.com.tcon.coracaopapel.modelo.dominio;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -18,9 +13,6 @@ public class TipoEndereco extends EntidadeDominio {
 	
 	@Column(name = "descricao")
 	private String descricao;
-	
-//	@OneToMany(mappedBy = "tipoEndereco", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//	private List<Endereco> endereco;
 	
 	public String getNome() {
 		return nome;
@@ -38,11 +30,4 @@ public class TipoEndereco extends EntidadeDominio {
 		this.descricao = descricao;
 	}
 
-//	public List<Endereco> getEndereco() {
-//		return endereco;
-//	}
-//
-//	public void setEndereco(List<Endereco> endereco) {
-//		this.endereco = endereco;
-//	}
 }

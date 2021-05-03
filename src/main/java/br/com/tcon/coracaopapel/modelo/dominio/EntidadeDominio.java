@@ -16,11 +16,11 @@ public class EntidadeDominio {
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	protected Integer id;
 	
-	@Column(name="dtCadastro")
+	@Column(name="dt_cadastro")
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date dtCadastro;
+	protected Date dtCadastro;
 	
 //	@Column(name="dtAlteracao")
 //	@Temporal(TemporalType.TIMESTAMP)

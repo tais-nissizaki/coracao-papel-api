@@ -20,7 +20,7 @@ public class CtrlTipoCliente {
 
 	@GetMapping
 	@ResponseBody
-	public List<TipoCliente> obterTodosTiposDocumento() {
+	public List<TipoCliente> obterTodosTiposCliente() {
 		return (List<TipoCliente>) consultarTipoClienteCommand.executar(new TipoCliente());
 	}
 }

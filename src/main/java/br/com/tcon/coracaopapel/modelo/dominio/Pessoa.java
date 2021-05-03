@@ -14,7 +14,8 @@ import javax.persistence.OneToMany;
 public abstract class Pessoa extends EntidadeDominio {
 
 	@OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Documento> documentos;
+//	@OneToMany
+	protected List<Documento> documentos;
 
 	public List<Documento> getDocumentos() {
 		return documentos;
@@ -23,4 +24,7 @@ public abstract class Pessoa extends EntidadeDominio {
 	public void setDocumentos(List<Documento> documentos) {
 		this.documentos = documentos;
 	}
+//	abstract List<Documento> getDocumentos();
+//	abstract void setDocumentos(List<Documento> documentos);
+	
 }

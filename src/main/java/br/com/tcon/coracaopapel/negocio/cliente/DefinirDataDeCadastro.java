@@ -10,17 +10,30 @@ public class DefinirDataDeCadastro implements IStrategy {
 
 	@Override
 	public String processar(EntidadeDominio entidade) {
-		if(entidade instanceof Cliente) {
+		if (entidade instanceof Cliente) {
 			Cliente cliente = (Cliente) entidade;
 			cliente.setDtCadastro(new Date());
-			if(cliente.getDocumentos() != null && !cliente.getDocumentos().isEmpty()) {
-				for( int i=0; i< cliente.getDocumentos().size(); i++) {
+			if (cliente.getDocumentos() != null && !cliente.getDocumentos().isEmpty()) {
+				for (int i = 0; i < cliente.getDocumentos().size(); i++) {
 					cliente.getDocumentos().get(i).setDtCadastro(new Date());
 				}
 			}
-			if(cliente.getEnderecos() != null && !cliente.getEnderecos().isEmpty()) {
-				for( int i=0; i< cliente.getEnderecos().size(); i++) {
+			if (cliente.getEnderecos() != null && !cliente.getEnderecos().isEmpty()) {
+				for (int i = 0; i < cliente.getEnderecos().size(); i++) {
 					cliente.getEnderecos().get(i).setDtCadastro(new Date());
+				}
+			}
+			if (cliente.getUsuario() != null) {
+				cliente.getUsuario().setDtCadastro(new Date());
+			}
+			if (cliente.getTelefones() != null && !cliente.getTelefones().isEmpty()) {
+				for (int i = 0; i < cliente.getTelefones().size(); i++) {
+					cliente.getTelefones().get(i).setDtCadastro(new Date());
+				}
+			}
+			if (cliente.getCartoes() != null && !cliente.getCartoes().isEmpty()) {
+				for (int i = 0; i < cliente.getCartoes().size(); i++) {
+					cliente.getCartoes().get(i).setDtCadastro(new Date());
 				}
 			}
 		}

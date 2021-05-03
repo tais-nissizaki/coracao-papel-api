@@ -2,11 +2,12 @@ package br.com.tcon.coracaopapel.modelo.dominio;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -14,19 +15,19 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "documento")
 public class Documento extends EntidadeDominio {
-	
+
 	@Column(name = "codigo")
 	private String codigo;
-	
+
 	@Column(name = "validade")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date validade;
-	
-	@ManyToOne
+
+	@OneToOne
 	@JoinColumn(name = "id_tipo_documento")
 	private TipoDocumento tipoDocumento;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
+
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_cliente")
 	private Cliente cliente;
 
@@ -61,5 +62,5 @@ public class Documento extends EntidadeDominio {
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
-	
+
 }
