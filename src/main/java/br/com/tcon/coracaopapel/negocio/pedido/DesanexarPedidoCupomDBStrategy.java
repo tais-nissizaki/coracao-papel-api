@@ -17,9 +17,9 @@ public class DesanexarPedidoCupomDBStrategy implements IStrategy {
 	@Override
 	public String processar(EntidadeDominio entidade) {
 		CupomPedido cupom = (CupomPedido)entidade;
+		entityManager.detach(cupom);
 		cupom.getCupom().setCliente(null);
 		cupom.getCupom().setPedido(null);
-		entityManager.detach(cupom.getCupom());
 //		entityManager.detach(cupom);
 //		cupom.setPedido(null);
 		return null;

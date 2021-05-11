@@ -62,9 +62,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/carrinho/**",
 						"/enderecos/**",
 						"/cartoes/**",
+						"/compras/**",
 						"/cupons/**",
 						"/produtos/**",
 						"/paises/**",
+						"/carrinhos/produto*",
+						"/grupos-precificacao/**",
 						"*").permitAll()
 				.anyRequest().authenticated()
 			.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

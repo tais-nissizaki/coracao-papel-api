@@ -62,15 +62,29 @@ public class CarrinhoDAO implements IDAO {
 		if(carrinho != null) {
 			List<EntidadeDominio> listaRetorno = new ArrayList<>();
 			if(carrinho.getId() == null) {
-				StringBuilder queryString = new StringBuilder("SELECT c FROM Carrinho c JOIN c.cliente cl ");
+				StringBuilder queryString = new StringBuilder("SELECT c FROM Carrinho c ");
+				queryString.append(" LEFT JOIN c.cliente cl ");
+				queryString.append(" LEFT JOIN c.itensCarrinho ic ");
+				queryString.append(" LEFT JOIN ic.produto p ");
 				Map<String, Object> parametros = new HashMap<>();
 				boolean adicionouWhere = false;
 				if (carrinho.getCliente() != null && carrinho.getCliente().getId() != null) {
 					if(!adicionouWhere) {
-						queryString.append("WHERE ");
+						queryString.append(" WHERE ");
+						adicionouWhere = true;
 					}
-					queryString.append("cl.id = :idCliente ");
+					queryString.append(" cl.id = :idCliente ");
 					parametros.put("idCliente", carrinho.getCliente().getId());
+				}
+				if(carrinho.getItensCarrinho() != null && !carrinho.getItensCarrinho().isEmpty()) {
+					if(!adicionouWhere) {
+						queryString.append(" WHERE ");
+						adicionouWhere = true;
+					} else {
+						queryString.append(" AND ");
+					}
+					queryString.append(" p.titulo like :tituloProduto ");
+					parametros.put("tituloProduto", "%" + carrinho.getItensCarrinho().get(0).getProduto().getTitulo() + "%");
 				}
 				
 				Query query = entityManager.createQuery(queryString.toString());

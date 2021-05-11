@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,11 +26,29 @@ public class CtrlProduto {
 	public List<EntidadeDominio> obterTodosProdutos() {
 		return consultarProdutoCommand.executar(new Produto());
 	}
-	
+
+	@GetMapping(path = "/{idProduto}")
+	@ResponseBody
+	public List<EntidadeDominio> obterProduto(@PathVariable(name = "idProduto") Integer idProduto) {
+		Produto produto = new Produto();
+		produto.setId(idProduto);
+		return consultarProdutoCommand.executar(produto);
+	}
 
 	@GetMapping(path = "filtrar")
 	@ResponseBody
 	public List<EntidadeDominio> obterProdutos(@RequestParam(name = "produto") String nomeProduto) {
+		Produto produto = new Produto();
+		produto.setTitulo(nomeProduto);
+		return consultarProdutoCommand.executar(produto);
+	}
+	
+
+	
+
+	@GetMapping(path = "reservado/filtrar")
+	@ResponseBody
+	public List<EntidadeDominio> obterProdutosReservados(@RequestParam(name = "produto") String nomeProduto) {
 		Produto produto = new Produto();
 		produto.setTitulo(nomeProduto);
 		return consultarProdutoCommand.executar(produto);

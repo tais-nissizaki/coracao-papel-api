@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,8 @@ public class CidadeDAO implements IDAO {
 
 	@Autowired
 	protected EntityManager entityManager;
-	
+
+	@Transactional
 	public boolean salvar(EntidadeDominio entidade) {
 		entityManager.persist(entidade);
 		return true;

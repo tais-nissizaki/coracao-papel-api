@@ -23,8 +23,9 @@ public class DesanexarCarrinhoBDStrategy implements IStrategy {
 		if(carrinho != null) {
 			if(carrinho.getItensCarrinho() != null) {
 				for(int i=0; i<carrinho.getItensCarrinho().size(); i++) {
-					entityManager.detach(carrinho.getItensCarrinho().get(i));
 					carrinho.getItensCarrinho().get(i).setCarrinho(null);
+					carrinho.getItensCarrinho().get(i).getProduto();
+					entityManager.detach(carrinho.getItensCarrinho().get(i));
 				}
 			}
 			if(carrinho.getCliente() != null && carrinho.getCliente().getId() != null) {

@@ -40,6 +40,7 @@ public class DesanexarClienteBDStrategy implements IStrategy {
 		}
 		cliente.getUsuario().setCliente(null);
 		cliente.getUsuario().setPermissoes(null);
+		entityManager.detach(cliente.getUsuario());
 		for(Telefone telefone: cliente.getTelefones()) {
 		}
 		entityManager.detach(cliente);

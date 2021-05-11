@@ -12,6 +12,9 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.util.Base64Utils;
 
 @Entity
 @Table(name = "produto")
@@ -23,6 +26,9 @@ public class Produto extends EntidadeDominio {
 	@Lob
 	@Column(name="imagem")
     private byte[] imagem;
+	
+	@Transient
+	private String imageBase64;
 	
 	@Column(name="valor")
 	private BigDecimal valor;
@@ -55,6 +61,9 @@ public class Produto extends EntidadeDominio {
 	@Column(name = "quantidade_estoque")
 	private Integer quantidadeEstoque;
 	
+	@Column(name = "ativo")
+	private Boolean ativo;
+	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "id_dimensao")
 	private Dimensao dimensao;
@@ -85,6 +94,9 @@ public class Produto extends EntidadeDominio {
 
 	public void setImagem(byte[] imagem) {
 		this.imagem = imagem;
+		if(this.imagem != null) {
+			this.imageBase64 = Base64Utils.encodeToString(this.imagem);
+		}
 	}
 
 	public BigDecimal getValor() {
@@ -159,6 +171,14 @@ public class Produto extends EntidadeDominio {
 		this.autor = autor;
 	}
 
+	public Integer getQuantidadeEstoque() {
+		return quantidadeEstoque;
+	}
+
+	public void setQuantidadeEstoque(Integer quantidadeEstoque) {
+		this.quantidadeEstoque = quantidadeEstoque;
+	}
+
 	public Dimensao getDimensao() {
 		return dimensao;
 	}
@@ -181,6 +201,28 @@ public class Produto extends EntidadeDominio {
 
 	public void setCategorias(List<Categoria> categorias) {
 		this.categorias = categorias;
+	}
+
+	public Boolean getAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(Boolean ativo) {
+		this.ativo = ativo;
+	}
+
+	public String getImageBase64() {
+		if(imagem != null) {
+			return Base64Utils.encodeToString(imagem);
+		}
+		return imageBase64;
+	}
+
+	public void setImageBase64(String imageBase64) {
+		this.imageBase64 = imageBase64;
+		if(imageBase64 != null) {
+			this.imagem = Base64Utils.decodeFromString(imageBase64);
+		}
 	}
 	
 }

@@ -35,5 +35,12 @@ public class GrupoPrecificacao extends EntidadeDominio {
 		this.descricao = descricao;
 	}
 
-	
+	public BigDecimal getPercentual() {
+		return percentual;
+	}
+
+	public void setPercentual(BigDecimal percentual) {
+		this.percentual = percentual;
+	}
+
 }

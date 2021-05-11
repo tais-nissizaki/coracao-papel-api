@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Component;
 
@@ -15,12 +14,14 @@ import br.com.tcon.coracaopapel.dao.CarrinhoDAO;
 import br.com.tcon.coracaopapel.dao.CartaoDAO;
 import br.com.tcon.coracaopapel.dao.CidadeDAO;
 import br.com.tcon.coracaopapel.dao.ClienteDAO;
+import br.com.tcon.coracaopapel.dao.CompraDAO;
 import br.com.tcon.coracaopapel.dao.CupomClienteDAO;
 import br.com.tcon.coracaopapel.dao.CupomDAO;
 import br.com.tcon.coracaopapel.dao.EnderecoDAO;
 import br.com.tcon.coracaopapel.dao.EstadoDAO;
 import br.com.tcon.coracaopapel.dao.FornecedorDAO;
 import br.com.tcon.coracaopapel.dao.GeneroDAO;
+import br.com.tcon.coracaopapel.dao.GrupoPrecificacaoDAO;
 import br.com.tcon.coracaopapel.dao.IDAO;
 import br.com.tcon.coracaopapel.dao.PaisDAO;
 import br.com.tcon.coracaopapel.dao.PedidoDAO;
@@ -38,6 +39,7 @@ import br.com.tcon.coracaopapel.modelo.dominio.Carrinho;
 import br.com.tcon.coracaopapel.modelo.dominio.Cartao;
 import br.com.tcon.coracaopapel.modelo.dominio.Cidade;
 import br.com.tcon.coracaopapel.modelo.dominio.Cliente;
+import br.com.tcon.coracaopapel.modelo.dominio.Compra;
 import br.com.tcon.coracaopapel.modelo.dominio.Cupom;
 import br.com.tcon.coracaopapel.modelo.dominio.CupomCliente;
 import br.com.tcon.coracaopapel.modelo.dominio.Endereco;
@@ -45,6 +47,7 @@ import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 import br.com.tcon.coracaopapel.modelo.dominio.Estado;
 import br.com.tcon.coracaopapel.modelo.dominio.Fornecedor;
 import br.com.tcon.coracaopapel.modelo.dominio.Genero;
+import br.com.tcon.coracaopapel.modelo.dominio.GrupoPrecificacao;
 import br.com.tcon.coracaopapel.modelo.dominio.Pais;
 import br.com.tcon.coracaopapel.modelo.dominio.Pedido;
 import br.com.tcon.coracaopapel.modelo.dominio.Produto;
@@ -68,9 +71,13 @@ import br.com.tcon.coracaopapel.negocio.cliente.ValidarCPFJaCadastradoStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.ValidarCPFStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.ValidarDadosObrigatoriosStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.ValidarIdentificadorClientePrenchidoStrategy;
+import br.com.tcon.coracaopapel.negocio.compra.AtribuirDataCadastroCompraStrategy;
+import br.com.tcon.coracaopapel.negocio.compra.CarregarFornecedorCompraStrategy;
+import br.com.tcon.coracaopapel.negocio.compra.CarregarProdutoItemCompraStrategy;
 import br.com.tcon.coracaopapel.negocio.cupom.DefinirValidadeCupomStrategy;
 import br.com.tcon.coracaopapel.negocio.cupom.DesanexarCupomBDStrategy;
 import br.com.tcon.coracaopapel.negocio.cupom.GerarCodigoCupomStrategy;
+import br.com.tcon.coracaopapel.negocio.cupom_cliente.AtribuirClienteCupomClienteStrategy;
 import br.com.tcon.coracaopapel.negocio.cupom_cliente.DefinirDataDeCadastroCupomCliente;
 import br.com.tcon.coracaopapel.negocio.cupom_cliente.DesanexarCupomClienteBDStrategy;
 import br.com.tcon.coracaopapel.negocio.endereco.DesanexarEnderecoBDStrategy;
@@ -132,7 +139,9 @@ public class Fachada implements IFachada {
 			ProdutoDAO produtoDAO,
 			CupomClienteDAO cupomClienteDAO,
 			FornecedorDAO fornecedorDAO,
-			PaisDAO paisDAO
+			PaisDAO paisDAO,
+			CompraDAO compraDAO,
+			GrupoPrecificacaoDAO grupoPrecificacaoDAO
 			) {
 		mapaDaos.put(Estado.class.getName(), estadoDAO);
 		mapaDaos.put(Cidade.class.getName(), cidadeDAO);
@@ -157,7 +166,9 @@ public class Fachada implements IFachada {
 		mapaDaos.put(CupomCliente.class.getName(), cupomClienteDAO);
 		mapaDaos.put(Fornecedor.class.getName(), fornecedorDAO);
 		mapaDaos.put(Pais.class.getName(), paisDAO);
-		
+		mapaDaos.put(Compra.class.getName(), compraDAO);
+		mapaDaos.put(GrupoPrecificacao.class.getName(), grupoPrecificacaoDAO);
+			
 		List<IStrategy> listaAntesPersistenciaCliente = new ArrayList<>();
 		listaAntesPersistenciaCliente.add(new DefinirTipoClienteNovoStrategy());
 		listaAntesPersistenciaCliente.add(new ValidarDadosObrigatoriosStrategy());
@@ -258,6 +269,7 @@ public class Fachada implements IFachada {
 		listaAntesPersistenciaCupomCliente.add(new GerarCodigoCupomStrategy());
 		listaAntesPersistenciaCupomCliente.add(new DefinirValidadeCupomStrategy());
 		listaAntesPersistenciaCupomCliente.add(new DefinirDataDeCadastroCupomCliente());
+		listaAntesPersistenciaCupomCliente.add(new AtribuirClienteCupomClienteStrategy(entityManager));
 		mapaAntesPersistencia.put(CupomCliente.class.getName(), listaAntesPersistenciaCupomCliente);
 		
 		List<IStrategy> listaDepoisConsultaCupomCliente = new ArrayList<>();
@@ -273,15 +285,22 @@ public class Fachada implements IFachada {
 		List<IStrategy> listaDepoisConsultaPaisCliente = new ArrayList<>();
 		listaDepoisConsultaPaisCliente.add(new DesanexarPaisDBDStrategy(entityManager));
 		mapaDepoisConsultar.put(Pais.class.getName(), listaDepoisConsultaPaisCliente);
+		
 		///// ESTADO
 		List<IStrategy> listaDepoisConsultaEstadoCliente = new ArrayList<>();
 		listaDepoisConsultaEstadoCliente.add(new DesanexarEstadoBdStrategy(entityManager));
 		mapaDepoisConsultar.put(Estado.class.getName(), listaDepoisConsultaEstadoCliente);
 		
+		//// COMPRA
+		List<IStrategy> listaAntesPersistenciaCompra = new ArrayList<>();
+		listaAntesPersistenciaCompra.add(new AtribuirDataCadastroCompraStrategy());
+		listaAntesPersistenciaCompra.add(new CarregarFornecedorCompraStrategy(entityManager));
+		listaAntesPersistenciaCompra.add(new CarregarProdutoItemCompraStrategy(entityManager));
+		mapaAntesPersistencia.put(Compra.class.getName(), listaAntesPersistenciaCompra);
+		
 	}
 
 	@Override
-	@Transactional
 	public String salvar(EntidadeDominio entidade) {
 		String nomeEntidadeDominio = entidade.getClass().getName();
 		StringBuilder regrasAntesPersistencia = executarStrategies(mapaAntesPersistencia.get(nomeEntidadeDominio), entidade);
@@ -303,7 +322,10 @@ public class Fachada implements IFachada {
 		StringBuilder retornoRegras = executarStrategies(mapaAntesAlteracao.get(nomeEntidadeDominio), entidade);
 		if(retornoRegras.length() == 0) {
 			try {
-				mapaDaos.get(nomeEntidadeDominio).alterar(entidade);
+				boolean alterado = mapaDaos.get(nomeEntidadeDominio).alterar(entidade);
+				if(!alterado) {
+					return "Falha ao efetuar alteração no banco de dados.";
+				}
 				retornoRegras = executarStrategies(mapaDepoisAlteracao.get(nomeEntidadeDominio), entidade);
 			} catch (Exception e ) {
 				e.printStackTrace();

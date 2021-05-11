@@ -36,9 +36,112 @@ public class ProdutoDAO implements IDAO {
 	}
 
 	@Override
+	@Transactional
 	public boolean alterar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			this.entityManager.flush();
+			Produto produto = (Produto) entidade;
+			StringBuilder updateCommand = new StringBuilder("UPDATE Produto p SET ");
+			Map<String, Object> parametros = new HashMap<>();
+			boolean adicionarVirgula = false;
+			if (produto.getAnoEdicao() != null) {
+				adicionarVirgula = true;
+				updateCommand.append(" p.anoEdicao = :anoEdicao ");
+				parametros.put("anoEdicao", produto.getAnoEdicao());
+			}
+			if (produto.getAutor() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.autor = :autor ");
+				parametros.put("autor", produto.getAutor());
+			}
+			if (produto.getCodigoBarras() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.codigoBarras = :codigoBarras ");
+				parametros.put("codigoBarras", produto.getCodigoBarras());
+			}
+			if (produto.getEdicao() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.edicao = :edicao ");
+				parametros.put("edicao", produto.getEdicao());
+			}
+			if (produto.getEditora() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.editora = :editora ");
+				parametros.put("editora", produto.getEditora());
+			}
+			if (produto.getIsbn() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.isbn = :isbn ");
+				parametros.put("isbn", produto.getIsbn());
+			}
+			if (produto.getNumeroPaginas() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.numeroPaginas = :numeroPaginas ");
+				parametros.put("numeroPaginas", produto.getNumeroPaginas());
+			}
+			if (produto.getQuantidadeEstoque() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.quantidadeEstoque = :quantidadeEstoque ");
+				parametros.put("quantidadeEstoque", produto.getQuantidadeEstoque());
+			}
+			if (produto.getSinopse() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.sinopse = :sinopse ");
+				parametros.put("sinopse", produto.getSinopse());
+			}
+			if (produto.getTitulo() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.titulo = :titulo ");
+				parametros.put("titulo", produto.getTitulo());
+			}
+			if (produto.getValor() != null) {
+				if(adicionarVirgula) {
+					updateCommand.append(",");
+				}
+				adicionarVirgula = true;
+				updateCommand.append(" p.valor = :valor ");
+				parametros.put("valor", produto.getValor());
+			}
+			updateCommand.append(" WHERE p.id = :id ");
+			parametros.put("id", produto.getId());
+			
+			Query query = entityManager.createQuery(updateCommand.toString());
+			for(Entry<String, Object> parametro: parametros.entrySet()) {
+				query.setParameter(parametro.getKey(), parametro.getValue());
+			}
+			
+			return query.executeUpdate() > 0;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
@@ -57,6 +160,12 @@ public class ProdutoDAO implements IDAO {
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
 		Produto produto = (Produto) entidade;
 		if(produto != null) {
+			if(produto.getId() != null) {
+				Produto produtoBD = entityManager.find(Produto.class, produto.getId());
+				List<EntidadeDominio> produtos = new ArrayList<>();
+				produtos.add(produtoBD);
+				return produtos;
+			}
 			StringBuilder queryString = new StringBuilder("SELECT DISTINCT p FROM Produto p JOIN p.categorias c ");
 			Map<String, Object> params = new HashMap<>();
 			if(produto.getCategorias() != null && !produto.getCategorias().isEmpty()) {

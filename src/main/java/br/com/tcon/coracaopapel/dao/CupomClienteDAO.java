@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,6 +23,7 @@ public class CupomClienteDAO implements IDAO {
 	private EntityManager entityManager;
 
 	@Override
+	@Transactional
 	public boolean salvar(EntidadeDominio entidade) {
 		try {
 			this.entityManager.persist(entidade);

@@ -23,7 +23,7 @@ public class ItemCompra extends EntidadeDominio {
 	private Compra compra;
 
 	@ManyToOne
-	@JoinColumn(name = "id_poduto")
+	@JoinColumn(name = "id_produto")
 	private Produto produto;
 
 	public Integer getQuantidade() {

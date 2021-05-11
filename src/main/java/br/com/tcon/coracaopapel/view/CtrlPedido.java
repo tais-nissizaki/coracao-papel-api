@@ -22,12 +22,15 @@ import br.com.tcon.coracaopapel.controle.cupom_cliente.SalvarCupomClienteCommand
 import br.com.tcon.coracaopapel.controle.pedido.AlterarPedidoCommand;
 import br.com.tcon.coracaopapel.controle.pedido.ConsultarPedidoCommand;
 import br.com.tcon.coracaopapel.controle.pedido.SalvarPedidoCommand;
+import br.com.tcon.coracaopapel.controle.produto.AlterarProdutoCommand;
+import br.com.tcon.coracaopapel.controle.produto.ConsultarProdutoCommand;
 import br.com.tcon.coracaopapel.modelo.dominio.Cliente;
 import br.com.tcon.coracaopapel.modelo.dominio.Cupom;
 import br.com.tcon.coracaopapel.modelo.dominio.CupomCliente;
 import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 import br.com.tcon.coracaopapel.modelo.dominio.ItemPedido;
 import br.com.tcon.coracaopapel.modelo.dominio.Pedido;
+import br.com.tcon.coracaopapel.modelo.dominio.Produto;
 import br.com.tcon.coracaopapel.modelo.dominio.StatusPedido;
 import br.com.tcon.coracaopapel.modelo.dominio.TransacaoPedido;
 
@@ -46,6 +49,12 @@ public class CtrlPedido {
 	
 	@Autowired
 	private SalvarCupomClienteCommand salvarCupomCommand;
+	
+	@Autowired
+	private ConsultarProdutoCommand consultarProdutoCommand;
+	
+	@Autowired
+	private AlterarProdutoCommand alterarProdutoCommand;
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
@@ -150,6 +159,25 @@ public class CtrlPedido {
 		statusPedido.setId(4);
 		pedido.setStatusPedido(statusPedido);
 		alterarPedidoCommand.executar(pedido);
+		
+		Pedido pedidoConsulta = new Pedido();
+		pedidoConsulta.setId(idPedido);
+		List<Pedido> pedidos = (List<Pedido>) consultarPedidoCommand.executar(pedidoConsulta);
+		if(pedidos != null && !pedidos.isEmpty()) {
+			Pedido p = pedidos.get(0);
+			for (ItemPedido ip: p.getItensPedido()) {
+				Produto produto = new Produto();
+				produto.setId(ip.getProduto().getId());
+				List<EntidadeDominio> produtos = (List<EntidadeDominio>)consultarProdutoCommand.executar(produto);
+				Produto produtoAlteraQuantidade = (Produto) produtos.get(0);
+				produto.setQuantidadeEstoque(produtoAlteraQuantidade.getQuantidadeEstoque() - ip.getQuantidade());
+				String retorno = (String)alterarProdutoCommand.executar(produto);
+				if(retorno != null && !retorno.isBlank()) {
+					return "Erro: " + retorno;
+				}
+			}
+			p.getCupons().get(0).getCupom();
+		}		
 		return "";
 	}
 	
@@ -175,7 +203,8 @@ public class CtrlPedido {
 	
 	@PutMapping(path = "finalizar-troca-pedido/{idPedido}")
 	@ResponseBody
-	public String finalizarTrocaDoPedido(@PathVariable("idPedido") Integer idPedido) {
+	public String finalizarTrocaDoPedido(@PathVariable("idPedido") Integer idPedido, 
+			@RequestParam(name = "retornar-ao-estoque") boolean retornarAoEstoque) {
 		Pedido pedido = new Pedido();
 		pedido.setId(idPedido);
 		pedido.setTransacoesPedido(new ArrayList<>());
@@ -199,7 +228,9 @@ public class CtrlPedido {
 		Pedido pedidoBD = pedidos.get(0);
 		
 		CupomCliente cupomCliente = new CupomCliente();
-		cupomCliente.setCliente(pedidoBD.getCliente());
+		Cliente cliente = new Cliente();
+		cliente.setId(pedidoBD.getCliente().getId());
+		cupomCliente.setCliente(cliente);
 		Cupom cupom = new Cupom();
 		cupom.setValor(pedidoBD.getValorTotal());
 		cupomCliente.setCupom(cupom);
@@ -210,6 +241,21 @@ public class CtrlPedido {
 			return "Erro: " + retornoGerarCupomTroca;
 		}
 		
+		if(retornarAoEstoque) {
+
+			for (ItemPedido ip: pedidoBD.getItensPedido()) {
+				Produto produto = new Produto();
+				produto.setId(ip.getProduto().getId());
+				List<EntidadeDominio> produtos = (List<EntidadeDominio>)consultarProdutoCommand.executar(produto);
+				Produto produtoAlteraQuantidade = (Produto) produtos.get(0);
+				produto.setQuantidadeEstoque(produtoAlteraQuantidade.getQuantidadeEstoque() + ip.getQuantidade());
+				String retorno = (String)alterarProdutoCommand.executar(produto);
+				if(retorno != null && !retorno.isBlank()) {
+					return "Erro: " + retorno;
+				}
+			}
+			
+		}
 		return cupomCliente.getCupom().getCodigo();
 	}
 
@@ -239,7 +285,7 @@ public class CtrlPedido {
 
 	@PutMapping(path = "trocar-itens-pedido/{idPedido}")
 	@ResponseBody
-	public String trocarPedidoTotalmente(@PathVariable(name = "idPedido") Integer idPedido, @RequestBody Pedido pedido) {
+	public String trocarPedidoParcialmente(@PathVariable(name = "idPedido") Integer idPedido, @RequestBody Pedido pedido) {
 		System.out.println(idPedido);
 		System.out.println(pedido.getItensPedido());
 		//

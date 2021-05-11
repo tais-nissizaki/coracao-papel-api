@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.tcon.coracaopapel.controle.carrinho.AlterarCarrinhoCommand;
@@ -22,6 +23,7 @@ import br.com.tcon.coracaopapel.controle.carrinho.SalvarCarrinhoCommand;
 import br.com.tcon.coracaopapel.modelo.dominio.Carrinho;
 import br.com.tcon.coracaopapel.modelo.dominio.Cliente;
 import br.com.tcon.coracaopapel.modelo.dominio.ItemCarrinho;
+import br.com.tcon.coracaopapel.modelo.dominio.Produto;
 
 @Controller
 @RequestMapping("carrinho")
@@ -147,6 +149,20 @@ public class CtrlCarrinho {
 	
 	public Carrinho obterDadosCarrinho() {
 		return null;
+	}
+	
+	@GetMapping(path = "produto")
+	@ResponseBody
+	public List<Carrinho> carrinhos(@RequestParam("titulo") String titulo) {
+		Carrinho carrinho = new Carrinho();
+		ArrayList<ItemCarrinho> itensCarrinho = new ArrayList<>();
+		ItemCarrinho itemCarrinho = new ItemCarrinho();
+		Produto produto = new Produto();
+		produto.setTitulo(titulo);
+		itemCarrinho.setProduto(produto);
+		itensCarrinho.add(itemCarrinho);
+		carrinho.setItensCarrinho(itensCarrinho);
+		return (List<Carrinho>) consultarCarrinhoCommand.executar(carrinho);
 	}
 
 }
