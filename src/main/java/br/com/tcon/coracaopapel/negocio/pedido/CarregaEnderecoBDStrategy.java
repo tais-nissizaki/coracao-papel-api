@@ -8,11 +8,11 @@ import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 import br.com.tcon.coracaopapel.modelo.dominio.Pedido;
 import br.com.tcon.coracaopapel.negocio.IStrategy;
 
-public class CarregaEnderecoDBStrategy implements IStrategy {
+public class CarregaEnderecoBDStrategy implements IStrategy {
 	
 	private EnderecoDAO enderecoDAO;
 	
-	public CarregaEnderecoDBStrategy(EnderecoDAO enderecoDAO) {
+	public CarregaEnderecoBDStrategy(EnderecoDAO enderecoDAO) {
 		this.enderecoDAO = enderecoDAO;
 	}
 

@@ -14,24 +14,24 @@ import br.com.tcon.coracaopapel.negocio.cartao.DesanexarCartaoBDStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.DesanexarClienteBDStrategy;
 import br.com.tcon.coracaopapel.negocio.endereco.DesanexarEnderecoBDStrategy;
 
-public class DesanexarPedidoDBStrategy implements IStrategy {
+public class DesanexarPedidoBDStrategy implements IStrategy {
 
 	private EntityManager entityManager;
 	private DesanexarEnderecoBDStrategy desanexarEnderecoBDStrategy;
 	private DesanexarCartaoBDStrategy desanexarCartaoBDStrategy;
 	private DesanexarClienteBDStrategy desanexarClienteBDStrategy;
-	private DesanexarItemPedidoDBStrategy desanexarItemPedidoDBStrategy;
-	private DesanexarPedidoCupomDBStrategy desanexarPedidoCupomDBStrategy;
-	private DesanexarPedidoPagamentoDBStrategy desanexarPedidoPagamentoDBStrategy;
+	private DesanexarItemPedidoBDStrategy desanexarItemPedidoDBStrategy;
+	private DesanexarPedidoCupomBDStrategy desanexarPedidoCupomDBStrategy;
+	private DesanexarPedidoPagamentoBDStrategy desanexarPedidoPagamentoDBStrategy;
 	
-	public DesanexarPedidoDBStrategy(EntityManager entityManager) {
+	public DesanexarPedidoBDStrategy(EntityManager entityManager) {
 		this.entityManager = entityManager;
 		this.desanexarEnderecoBDStrategy = new DesanexarEnderecoBDStrategy(entityManager);
 		this.desanexarCartaoBDStrategy = new DesanexarCartaoBDStrategy(entityManager);
 		this.desanexarClienteBDStrategy = new DesanexarClienteBDStrategy(entityManager);
-		this.desanexarItemPedidoDBStrategy = new DesanexarItemPedidoDBStrategy(entityManager);
-		this.desanexarPedidoCupomDBStrategy = new DesanexarPedidoCupomDBStrategy(entityManager);
-		this.desanexarPedidoPagamentoDBStrategy = new DesanexarPedidoPagamentoDBStrategy(entityManager);
+		this.desanexarItemPedidoDBStrategy = new DesanexarItemPedidoBDStrategy(entityManager);
+		this.desanexarPedidoCupomDBStrategy = new DesanexarPedidoCupomBDStrategy(entityManager);
+		this.desanexarPedidoPagamentoDBStrategy = new DesanexarPedidoPagamentoBDStrategy(entityManager);
 	}
 	
 	@Override

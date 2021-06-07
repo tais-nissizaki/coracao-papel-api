@@ -9,11 +9,11 @@ import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 import br.com.tcon.coracaopapel.modelo.dominio.Pedido;
 import br.com.tcon.coracaopapel.negocio.IStrategy;
 
-public class CarregarCupomDBStrategy implements IStrategy {
+public class CarregarCupomBDStrategy implements IStrategy {
 	
 	private CupomDAO cupomDAO;
 	
-	public CarregarCupomDBStrategy(CupomDAO cupomDAO) {
+	public CarregarCupomBDStrategy(CupomDAO cupomDAO) {
 		this.cupomDAO = cupomDAO;
 	}
 

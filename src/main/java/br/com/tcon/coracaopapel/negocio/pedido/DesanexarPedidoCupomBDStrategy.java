@@ -6,11 +6,11 @@ import br.com.tcon.coracaopapel.modelo.dominio.CupomPedido;
 import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 import br.com.tcon.coracaopapel.negocio.IStrategy;
 
-public class DesanexarPedidoCupomDBStrategy implements IStrategy {
+public class DesanexarPedidoCupomBDStrategy implements IStrategy {
 
 	private EntityManager entityManager;
 	
-	public DesanexarPedidoCupomDBStrategy(EntityManager entityManager) {
+	public DesanexarPedidoCupomBDStrategy(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
 	

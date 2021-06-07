@@ -6,11 +6,11 @@ import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 import br.com.tcon.coracaopapel.modelo.dominio.Pais;
 import br.com.tcon.coracaopapel.negocio.IStrategy;
 
-public class DesanexarPaisDBDStrategy implements IStrategy {
+public class DesanexarPaisBDStrategy implements IStrategy {
 	
 	private EntityManager entityManager;
 
-	public DesanexarPaisDBDStrategy(EntityManager entityManager) {
+	public DesanexarPaisBDStrategy(EntityManager entityManager) {
 		super();
 		this.entityManager = entityManager;
 	}

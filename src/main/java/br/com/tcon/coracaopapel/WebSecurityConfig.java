@@ -41,9 +41,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				.antMatchers(
-						"/teste",
-						"/teste/**",
-						"/teste/produto",
 						"/estados/**",
 						"/cidades/**",
 						"/clientes/**",
@@ -66,6 +63,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/cupons/**",
 						"/produtos/**",
 						"/paises/**",
+						"/dashboard/**",
 						"/carrinhos/produto*",
 						"/grupos-precificacao/**",
 						"*").permitAll()

@@ -14,9 +14,6 @@ public class Telefone extends EntidadeDominio {
 	@Column(name = "numero")
 	private String numero;
 
-	@Column(name = "ramal")
-	private String ramal;
-
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_tipo_telefone")
 	private TipoTelefone tipoTelefone;
@@ -27,14 +24,6 @@ public class Telefone extends EntidadeDominio {
 
 	public void setNumero(String numero) {
 		this.numero = numero;
-	}
-
-	public String getRamal() {
-		return ramal;
-	}
-
-	public void setRamal(String ramal) {
-		this.ramal = ramal;
 	}
 
 	public TipoTelefone getTipoTelefone() {

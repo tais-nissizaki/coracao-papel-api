@@ -76,6 +76,7 @@ public class CarrinhoDAO implements IDAO {
 					queryString.append(" cl.id = :idCliente ");
 					parametros.put("idCliente", carrinho.getCliente().getId());
 				}
+				
 				if(carrinho.getItensCarrinho() != null && !carrinho.getItensCarrinho().isEmpty()) {
 					if(!adicionouWhere) {
 						queryString.append(" WHERE ");
@@ -83,8 +84,14 @@ public class CarrinhoDAO implements IDAO {
 					} else {
 						queryString.append(" AND ");
 					}
-					queryString.append(" p.titulo like :tituloProduto ");
-					parametros.put("tituloProduto", "%" + carrinho.getItensCarrinho().get(0).getProduto().getTitulo() + "%");
+					
+					if (carrinho.getItensCarrinho().get(0).getProduto().getId() != null && carrinho.getItensCarrinho().get(0).getProduto().getId() > 0) {
+						queryString.append(" p.id = :idProduto");
+						parametros.put("idProduto", carrinho.getItensCarrinho().get(0).getProduto().getId());
+					} else { 
+						queryString.append(" p.titulo like :tituloProduto ");
+						parametros.put("tituloProduto", "%" + carrinho.getItensCarrinho().get(0).getProduto().getTitulo() + "%");
+					}
 				}
 				
 				Query query = entityManager.createQuery(queryString.toString());

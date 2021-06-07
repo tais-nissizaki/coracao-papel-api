@@ -232,7 +232,7 @@ public class CtrlPedido {
 		cliente.setId(pedidoBD.getCliente().getId());
 		cupomCliente.setCliente(cliente);
 		Cupom cupom = new Cupom();
-		cupom.setValor(pedidoBD.getValorTotal());
+		cupom.setValor(pedidoBD.getValorTotal().add(pedidoBD.getEnderecoEntrega().getValorFrete().negate()));
 		cupomCliente.setCupom(cupom);
 		cupom.setCliente(cupomCliente);
 		String retornoGerarCupomTroca = (String) salvarCupomCommand.executar(cupomCliente);

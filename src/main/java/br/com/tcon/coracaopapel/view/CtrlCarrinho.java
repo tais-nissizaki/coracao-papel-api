@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,7 +82,7 @@ public class CtrlCarrinho {
 
 	@PutMapping
 	@ResponseBody
-	public Carrinho atualizar(@RequestBody Carrinho carrinho) {
+	public ResponseEntity<Carrinho> atualizar(@RequestBody Carrinho carrinho) {
 		List<Carrinho> carrinhos = (List<Carrinho>) consultarCarrinhoCommand.executar(carrinho);
 		Carrinho carrinhoBD = carrinhos.get(0);
 		List<ItemCarrinho> itensAManter = new ArrayList<ItemCarrinho>();
@@ -93,9 +95,13 @@ public class CtrlCarrinho {
 			}
 		}
 		carrinhoBD.setItensCarrinho(itensAManter);
-		alterarCarrinhoCommand.executar(carrinhoBD);
+		String retorno = (String) alterarCarrinhoCommand.executar(carrinhoBD);
 //		List<Carrinho> carrinhos = (List<Carrinho>) consultarCarrinhoCommand.executar(carrinho);
-		return ((List<Carrinho>) consultarCarrinhoCommand.executar(carrinho)).get(0);
+		int status = 200;
+		if (retorno != null && !retorno.isBlank()) {
+			status = 423;
+		}
+		return ResponseEntity.status(status).body(((List<Carrinho>) consultarCarrinhoCommand.executar(carrinho)).get(0));
 	}
 			
 	@PostMapping(path = {
@@ -104,7 +110,7 @@ public class CtrlCarrinho {
 			"cliente/{idCliente}"
 			})
 	@ResponseBody
-	public Carrinho adicionarAoCarrinho( 
+	public ResponseEntity<Carrinho> adicionarAoCarrinho( 
 			@PathVariable(required = false) Integer idCliente,
 			@PathVariable(required = false) Integer idCarrinho,
 			@RequestBody ItemCarrinho itemCarrinho) {
@@ -116,10 +122,10 @@ public class CtrlCarrinho {
 			carrinho.getCliente().setId(idCliente);
 		}
 		List<Carrinho> carrinhos = (List<Carrinho>) consultarCarrinhoCommand.executar(carrinho);
+		int status = 200;
 		if(carrinhos != null && !carrinhos.isEmpty()) {
 			carrinho = carrinhos.get(0);
 			boolean encontrou = false;
-			ItemCarrinho itemCarrinhoEncontrado = null;
 			for(int i=0; i<carrinho.getItensCarrinho().size(); i++) {
 				if (carrinho.getItensCarrinho().get(i).getProduto().getId().equals(itemCarrinho.getProduto().getId())) {
 					encontrou = true;
@@ -132,7 +138,10 @@ public class CtrlCarrinho {
 				carrinho.getItensCarrinho().add(itemCarrinho);
 			}
 			itemCarrinho.setCarrinho(carrinho);
-			alterarCarrinhoCommand.executar(carrinho);
+			String retorno = (String) alterarCarrinhoCommand.executar(carrinho);
+			if (retorno != null && !retorno.isBlank()) {
+				status = 423;
+			}
 			carrinhos = (List<Carrinho>) consultarCarrinhoCommand.executar(carrinho);
 			carrinho = carrinhos.get(0);
 		} else {
@@ -140,11 +149,13 @@ public class CtrlCarrinho {
 			carrinho.setItensCarrinho(new ArrayList<>());
 			itemCarrinho.setCarrinho(carrinho);
 			carrinho.getItensCarrinho().add(itemCarrinho);
-			salvarCarrinhoCommand.executar(carrinho);
-			System.out.println(carrinho.getId());
+			String retorno = (String) salvarCarrinhoCommand.executar(carrinho);
+			if (retorno != null && !retorno.isBlank()) {
+				status = 423;
+			}
 		}
 		
-		return carrinho;
+		return ResponseEntity.status(status).body(carrinho);
 	}
 	
 	public Carrinho obterDadosCarrinho() {
