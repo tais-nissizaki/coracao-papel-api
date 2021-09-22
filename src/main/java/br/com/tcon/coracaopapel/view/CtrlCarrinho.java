@@ -121,7 +121,10 @@ public class CtrlCarrinho {
 			carrinho.setCliente(new Cliente());
 			carrinho.getCliente().setId(idCliente);
 		}
-		List<Carrinho> carrinhos = (List<Carrinho>) consultarCarrinhoCommand.executar(carrinho);
+		List<Carrinho> carrinhos = null;
+		if(idCliente != null || idCarrinho != null) {
+			carrinhos = (List<Carrinho>) consultarCarrinhoCommand.executar(carrinho);
+		}
 		int status = 200;
 		if(carrinhos != null && !carrinhos.isEmpty()) {
 			carrinho = carrinhos.get(0);

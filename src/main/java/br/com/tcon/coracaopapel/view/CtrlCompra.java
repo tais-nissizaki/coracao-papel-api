@@ -1,7 +1,6 @@
 package br.com.tcon.coracaopapel.view;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.tcon.coracaopapel.controle.compra.SalvarCompraCommand;
 import br.com.tcon.coracaopapel.controle.produto.AlterarProdutoCommand;
+import br.com.tcon.coracaopapel.controle.produto.AtivarProdutoCommand;
 import br.com.tcon.coracaopapel.controle.produto.ConsultarProdutoCommand;
 import br.com.tcon.coracaopapel.modelo.dominio.Compra;
 import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
@@ -34,6 +34,9 @@ public class CtrlCompra {
 	@Autowired
 	private AlterarProdutoCommand alterarProdutoCommand;
 	
+	@Autowired
+	private AtivarProdutoCommand ativarProdutoCommand;
+	
 	@PostMapping
 	@ResponseBody
 	public String efetivarCompra(@RequestBody Compra compra) {
@@ -52,15 +55,19 @@ public class CtrlCompra {
 				Produto produtoBD = (Produto)produtosBD.get(0);
 				produto.setId(produtoBD.getId());
 				produtoBD.getGrupoPrecificacao().getPercentual();
-				produto.setQuantidadeEstoque(produtoBD.getQuantidadeEstoque() + itemCompra.getQuantidade());
+				produtoBD.setQuantidadeEstoque(produtoBD.getQuantidadeEstoque() + itemCompra.getQuantidade());
 				
 				BigDecimal novoPreco = obterNovoPrecoVenda(novoPrecoVenda, itemCompra, produto, produtoBD);
-				produto.setValor(novoPreco);
+				produtoBD.setValor(novoPreco);
 				novoPrecoVenda.put(produto.getId(), novoPreco);
 				
-				String executar = (String) alterarProdutoCommand.executar(produto);
+				String executar = (String) alterarProdutoCommand.executar(produtoBD);
 				if (executar != null && !executar.isBlank()) {					
 					return "Erro: " + executar;
+				}
+				String retornoAtivacao = (String) ativarProdutoCommand.executar(produto);
+				if (retornoAtivacao != null && !retornoAtivacao.isBlank()) {					
+					return "Erro: " + retornoAtivacao;
 				}
 			}
 		}
@@ -77,10 +84,10 @@ public class CtrlCompra {
 			if(novoPrecoVenda.get(produto.getId()).compareTo(novoPreco) > 0) {
 				novoPreco = novoPrecoVenda.get(produto.getId());
 			}
-//		} else { // Esse trecho comentado é para verificar se o já cadastrado é maior que o novo calculado
-//			if(produtoBD.getValor().compareTo(novoPreco) > 0) {
-//				novoPreco = produtoBD.getValor();
-//			}
+		} else { // Esse trecho comentado é para verificar se o já cadastrado é maior que o novo calculado
+			if(produtoBD.getValor().compareTo(novoPreco) > 0) {
+				novoPreco = produtoBD.getValor();
+			}
 		}
 		return novoPreco;
 	}

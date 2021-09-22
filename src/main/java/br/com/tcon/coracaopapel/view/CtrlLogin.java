@@ -56,6 +56,7 @@ public class CtrlLogin {
 			List<Cliente> clientes = (List<Cliente>) consultarClienteCommand.executar(cliente);
 			if(clientes != null && !clientes.isEmpty()) {				
 				dadosUsuario.setIdCliente(clientes.get(0).getId());
+				dadosUsuario.setAtivo(clientes.get(0).getAtivo());
 			}
 		}
 		dadosUsuario.setPermissoes(permissoes);

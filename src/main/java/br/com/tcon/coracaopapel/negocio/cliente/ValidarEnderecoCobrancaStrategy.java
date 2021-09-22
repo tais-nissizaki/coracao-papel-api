@@ -14,8 +14,7 @@ public class ValidarEnderecoCobrancaStrategy implements IStrategy {
 			Cliente cliente = (Cliente) entidade;
 			boolean encontrouCobranca = false;
 			if(cliente.getEnderecos() != null && !cliente.getEnderecos().isEmpty()) {
-				for(int i=0; i< cliente.getEnderecos().size(); i++) {
-					Endereco endereco = cliente.getEnderecos().get(i);
+				for (Endereco endereco: cliente.getEnderecos()) {
 					if (endereco.getTipoEndereco().getId() != null && endereco.getTipoEndereco().getId() == 2) {
 						encontrouCobranca = true;
 						break;

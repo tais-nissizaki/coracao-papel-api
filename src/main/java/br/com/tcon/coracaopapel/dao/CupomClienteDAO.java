@@ -72,6 +72,17 @@ public class CupomClienteDAO implements IDAO {
 			parametros.put("finalVigencia", cupomCliente.getCupom().getFinalVigencia());
 		}
 		
+
+		if(cupomCliente.getUtilizado() != null) {
+			if(queryString.indexOf("WHERE") < 0) {
+				queryString.append("WHERE ");
+			} else {
+				queryString.append("AND ");
+			}
+			queryString.append(" c.utilizado = :utilizado ");
+			parametros.put("utilizado", cupomCliente.getUtilizado());
+		}
+		
 		if(cupomCliente.getCliente() != null && cupomCliente.getCliente() != null && cupomCliente.getCliente().getId() != null) {
 			if(queryString.indexOf("WHERE") < 0) {
 				queryString.append("WHERE ");

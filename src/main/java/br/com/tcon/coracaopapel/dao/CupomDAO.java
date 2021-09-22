@@ -80,6 +80,16 @@ public class CupomDAO implements IDAO {
 			queryString.append("c.finalVigencia >= :finalVigencia ");
 			parametros.put("finalVigencia", cupom.getFinalVigencia());
 		}
+
+		if(cupom.getCliente() != null && cupom.getCliente().getUtilizado() != null) {
+			if(queryString.indexOf("WHERE") < 0) {
+				queryString.append("WHERE ");
+			} else {
+				queryString.append("AND ");
+			}
+			queryString.append("cc.utilizado = :utilizado ");
+			parametros.put("utilizado", cupom.getCliente().getUtilizado());
+		}
 		
 		if(cupom.getCliente() != null && cupom.getCliente().getCliente() != null && cupom.getCliente().getCliente().getId() != null) {
 			if(queryString.indexOf("WHERE") < 0) {

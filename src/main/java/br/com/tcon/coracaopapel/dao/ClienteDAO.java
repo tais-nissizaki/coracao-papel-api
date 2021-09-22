@@ -1,5 +1,6 @@
 package br.com.tcon.coracaopapel.dao;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,10 +14,13 @@ import org.hibernate.annotations.QueryHints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import br.com.tcon.coracaopapel.modelo.dominio.Cartao;
 import br.com.tcon.coracaopapel.modelo.dominio.Cliente;
 import br.com.tcon.coracaopapel.modelo.dominio.Documento;
 import br.com.tcon.coracaopapel.modelo.dominio.Endereco;
 import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
+import br.com.tcon.coracaopapel.modelo.dominio.Genero;
+import br.com.tcon.coracaopapel.modelo.dominio.Telefone;
 import br.com.tcon.coracaopapel.modelo.dominio.TipoCliente;
 
 @Repository
@@ -30,15 +34,23 @@ public class ClienteDAO implements IDAO {
 	public boolean salvar(EntidadeDominio entidade) {
 		Cliente cliente = (Cliente) entidade;
 		List<Documento> documentos = cliente.getDocumentos();
+		List<Endereco> enderecos = cliente.getEnderecos();
 		cliente.setDocumentos(null);
+		cliente.setEnderecos(null);
 
 		entityManager.persist(cliente);
-		entityManager.flush();
 		if(documentos != null) { 
 			for(int i=0; i< documentos.size(); i++) {
 				Documento documento = documentos.get(i);
 				documento.setCliente(cliente);
 				entityManager.persist(documento);
+			}
+		}
+		if(documentos != null) { 
+			for(int i=0; i< enderecos.size(); i++) {
+				Endereco endereco = enderecos.get(i);
+				endereco.setCliente(cliente);
+				entityManager.persist(endereco);
 			}
 		}
 		return true;
@@ -53,54 +65,108 @@ public class ClienteDAO implements IDAO {
 		clienteBD.setNome(cliente.getNome());
 		clienteBD.setAtivo(cliente.getAtivo());
 		clienteBD.setTipoCliente(entityManager.find(TipoCliente.class, cliente.getTipoCliente().getId()));
+		clienteBD.setGenero(entityManager.find(Genero.class, cliente.getGenero().getId()));
+		clienteBD.setDataNascimento(cliente.getDataNascimento());
+		clienteBD.setEmail(cliente.getEmail());
+		
+		if (cliente.getTelefones() != null && !cliente.getTelefones().isEmpty()) {
+			Telefone telefoneBD = clienteBD.getTelefones().get(0);
+			Telefone telefone = cliente.getTelefones().get(0);
+			telefoneBD.setTipoTelefone(telefone.getTipoTelefone());
+			telefoneBD.setNumero(telefone.getNumero());
+			entityManager.merge(telefoneBD);
+		}
+		
+		Iterator<Endereco> enderecoIterator = clienteBD.getEnderecos().iterator();
+		while (enderecoIterator.hasNext()) {
+			Endereco enderecoDB = enderecoIterator.next();
+			if(!cliente.getEnderecos().contains(enderecoDB)) {				
+				enderecoIterator.remove();
+			}
+		}
+		
+		enderecoIterator = cliente.getEnderecos().iterator();
+		while (enderecoIterator.hasNext()) {
+			Endereco endereco = enderecoIterator.next();
+			if(!clienteBD.getEnderecos().contains(endereco)) {		
+				endereco.setCliente(clienteBD);
+				endereco.setDtCadastro(new Date());
+				clienteBD.getEnderecos().add(endereco);
+			} else {
+				Endereco enderecoBD = entityManager.find(Endereco.class, endereco.getId());
+				
+				enderecoBD.setAtivo(true);
+				enderecoBD.setBairro(endereco.getBairro());
+				enderecoBD.setCep(endereco.getCep());
+				enderecoBD.setCidade(endereco.getCidade());
+				enderecoBD.setComplemento(endereco.getComplemento());
+				enderecoBD.setIdentificadorEndereco(endereco.getIdentificadorEndereco());
+				enderecoBD.setLogradouro(endereco.getLogradouro());
+				enderecoBD.setNumero(endereco.getNumero());
+				enderecoBD.setObservacao(endereco.getObservacao());
+				enderecoBD.setTipoEndereco(endereco.getTipoEndereco());
+				enderecoBD.setTipoLogradouro(endereco.getTipoLogradouro());
+				enderecoBD.setTipoResidencia(endereco.getTipoResidencia());
+			}
+			
+		}
+		
+		Iterator<Documento> documentosIterator = clienteBD.getDocumentos().iterator();
+		while (documentosIterator.hasNext()) {
+			Documento documentoDB = documentosIterator.next();
+			if(!cliente.getDocumentos().contains(documentoDB)) {				
+				documentosIterator.remove();
+			}
+			
+		}
+		
+		documentosIterator = cliente.getDocumentos().iterator();
+		while (documentosIterator.hasNext()) {
+			Documento documento = documentosIterator.next();
+			if(!clienteBD.getDocumentos().contains(documento)) {		
+				documento.setCliente(clienteBD);
+				documento.setDtCadastro(new Date());
+				clienteBD.getDocumentos().add(documento);
+			} else {
+				Documento documentoBD = entityManager.find(Documento.class, documento.getId());
+				documentoBD.setCodigo(documento.getCodigo());
+				documentoBD.setValidade(documento.getValidade());
+				documentoBD.setTipoDocumento(documento.getTipoDocumento());
+			}
+			
+		}
 
-		Iterator<Endereco> iteratorDB = clienteBD.getEnderecos().iterator();
-		while (iteratorDB.hasNext()) {
-			Endereco endereco = iteratorDB.next();
-//			endereco.setCliente(cliente);
-			entityManager.remove(endereco);	
-		}
-//		for(int i=0; i< clienteBD.getEnderecos().size(); i++) {
-//			Endereco enderecoDB = clienteBD.getEnderecos().get(i);
-//			entityManager.remove(enderecoDB);
-//		}
-		for(int i=0; i< clienteBD.getDocumentos().size(); i++) {
-			Documento documentoDB = clienteBD.getDocumentos().get(i);
-			entityManager.remove(documentoDB);
-		}
-		clienteBD.getEnderecos().clear();;
-		clienteBD.getDocumentos().clear();;
 		
-		Iterator<Endereco> iterator = cliente.getEnderecos().iterator();
-		while (iterator.hasNext()) {
-			Endereco endereco = iterator.next();
-//			endereco.setCliente(cliente);
-			if(endereco.getId() != null && endereco.getId().intValue() > 0) {
-				entityManager.merge(endereco);
-			} else {
-				entityManager.persist(endereco);
+		Iterator<Cartao> cartoesIterator = clienteBD.getCartoes().iterator();
+		while (cartoesIterator.hasNext()) {
+			Cartao cartaoDB = cartoesIterator.next();
+			if(!cliente.getCartoes().contains(cartaoDB)) {				
+				cartoesIterator.remove();
 			}
+			
 		}
 		
-//		for(int i=0; i< cliente.getEnderecos().size(); i++) {
-//			Endereco endereco = cliente.getEnderecos().get(i);
-////			endereco.setCliente(clienteBD);
-//			if(endereco.getId() != null && endereco.getId().intValue() > 0) {
-//				entityManager.merge(endereco);
-//			} else {
-//				entityManager.persist(endereco);
-//			}
-//		}
-		
-		for(int i=0; i< cliente.getDocumentos().size(); i++) {
-			Documento documento = cliente.getDocumentos().get(i);
-			documento.setCliente(clienteBD)	;
-			if(documento.getId() != null && documento.getId().intValue() > 0) {
-				entityManager.merge(documento);
+		cartoesIterator = cliente.getCartoes().iterator();
+		while (cartoesIterator.hasNext()) {
+			Cartao cartao = cartoesIterator.next();
+			if(!clienteBD.getCartoes().contains(cartao)) {		
+				cartao.setCliente(clienteBD);
+				cartao.setDtCadastro(new Date());
+				clienteBD.getCartoes().add(cartao);
 			} else {
-				entityManager.persist(documento);
+				Cartao cartaoBD = entityManager.find(Cartao.class, cartao.getId());
+				
+				cartaoBD.setBandeiraCartao(cartao.getBandeiraCartao());
+				cartaoBD.setCvv(cartao.getCvv());
+				cartaoBD.setDataValidade(cartao.getDataValidade());
+				cartaoBD.setNomeImpresso(cartao.getNomeImpresso());
+				cartaoBD.setNumero(cartao.getNumero());
+				cartaoBD.setTipoCartao(cartao.getTipoCartao());
 			}
+			
 		}
+		
+		entityManager.merge(clienteBD);
 		return true;
 	}
 
@@ -211,7 +277,7 @@ public class ClienteDAO implements IDAO {
 						    "SELECT DISTINCT c " +
 						    "FROM Cliente c " +
 						    "JOIN FETCH c.documentos d " +
-						    "where c in :clientes ", Cliente.class)
+						    "where d.cliente in :clientes ", Cliente.class)
 						.setParameter("clientes", resultado)
 						.setHint(QueryHints.PASS_DISTINCT_THROUGH, false)
 						.getResultList();
@@ -221,7 +287,7 @@ public class ClienteDAO implements IDAO {
 						    "SELECT DISTINCT c " +
 						    "FROM Cliente c " +
 						    "JOIN FETCH c.enderecos e " +
-						    "where c in :clientes ", Cliente.class)
+						    "where e.cliente in :clientes ", Cliente.class)
 						.setParameter("clientes", resultado)
 						.setHint(QueryHints.PASS_DISTINCT_THROUGH, false)
 						.getResultList();

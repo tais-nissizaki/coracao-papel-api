@@ -7,10 +7,12 @@ import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import br.com.tcon.coracaopapel.modelo.dominio.Cliente;
 import br.com.tcon.coracaopapel.modelo.dominio.Endereco;
 import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 
@@ -21,18 +23,44 @@ public class EnderecoDAO implements IDAO {
 	private EntityManager entityManager;
 
 	@Override
+	@Transactional
 	public boolean salvar(EntidadeDominio entidade) {
-		return false;
+		Endereco endereco = (Endereco) entidade;
+		try {
+			Cliente cliente = entityManager.find(Cliente.class, endereco.getCliente().getId());
+			cliente.getEnderecos().add(endereco);
+			entityManager.merge(cliente);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	@Override
+	@Transactional
 	public boolean alterar(EntidadeDominio entidade) {
-		return false;
+		try {
+			entityManager.merge(entidade);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	@Override
+	@Transactional
 	public boolean inativar(EntidadeDominio entidade) {
-		return false;
+		try {
+			Endereco endereco = entityManager.find(Endereco.class, entidade.getId());
+			endereco.setAtivo(false);
+			entityManager.merge(endereco);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	@Override

@@ -20,6 +20,7 @@ public class DefinirDataDeCadastroCupomCliente implements IStrategy {
 	public String processar(EntidadeDominio entidade) {
 		entidade.setDtCadastro(new Date());
 		this.definirDataDeCadastroCupom.processar(((CupomCliente)entidade).getCupom());
+		((CupomCliente)entidade).setUtilizado(false);
 		return null;
 	}
 

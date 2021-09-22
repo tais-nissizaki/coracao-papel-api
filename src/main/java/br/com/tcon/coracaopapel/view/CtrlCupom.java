@@ -53,10 +53,11 @@ public class CtrlCupom {
 	
 	@GetMapping("cliente/{idCliente}")
 	@ResponseBody
-	public List obterCuponsCliente(
+	public List<Cupom> obterCuponsCliente(
 			@PathVariable(name = "idCliente") Integer idCliente,
 			@RequestParam(name = "dataInicial")@DateTimeFormat(pattern = "dd/MM/yyy") Date periodoInicial,
-			@RequestParam(name = "dataFinal")@DateTimeFormat(pattern = "dd/MM/yyy") Date periodoFinal) {
+			@RequestParam(name = "dataFinal")@DateTimeFormat(pattern = "dd/MM/yyy") Date periodoFinal,
+			@RequestParam(name = "flagUtilizado", required = false) Boolean flagUtilizado) {
 		CupomCliente cupomCliente = new CupomCliente();
 		cupomCliente.setCliente(new Cliente());
 		cupomCliente.getCliente().setId(idCliente);
@@ -65,6 +66,7 @@ public class CtrlCupom {
 		cupom.setInicioVigencia(periodoInicial);
 		cupom.setFinalVigencia(periodoFinal);
 		cupomCliente.setCupom(cupom);
+		cupomCliente.setUtilizado(flagUtilizado);
 		return (List<Cupom>) consultarCupomClienteCommand.executar(cupomCliente);
 	}
 	

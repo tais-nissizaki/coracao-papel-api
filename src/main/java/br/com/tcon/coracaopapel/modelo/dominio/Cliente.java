@@ -43,7 +43,7 @@ public class Cliente extends Pessoa {
 	@JoinColumn(name = "id_genero")
 	private Genero genero;
 	
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = Endereco.class)
 	@JoinTable(
 			name="cliente_endereco",
 			joinColumns = @JoinColumn(name = "id_cliente"),

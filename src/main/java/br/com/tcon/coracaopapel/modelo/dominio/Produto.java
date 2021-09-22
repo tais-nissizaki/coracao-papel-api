@@ -221,7 +221,11 @@ public class Produto extends EntidadeDominio {
 	public void setImageBase64(String imageBase64) {
 		this.imageBase64 = imageBase64;
 		if(imageBase64 != null) {
-			this.imagem = Base64Utils.decodeFromString(imageBase64);
+			if(imageBase64.contains("data:image") && (imageBase64.contains("base64"))) {
+				this.imagem = Base64Utils.decodeFromString(imageBase64.split(",")[1]);
+			} else {
+				this.imagem = Base64Utils.decodeFromString(imageBase64);
+			}
 		}
 	}
 	

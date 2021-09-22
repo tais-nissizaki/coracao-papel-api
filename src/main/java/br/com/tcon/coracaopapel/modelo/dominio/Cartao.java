@@ -28,6 +28,9 @@ public class Cartao extends EntidadeDominio {
 	@Column(name = "dt_validade")
 	@Temporal(TemporalType.DATE)
 	private Date dataValidade;
+
+	@Column(name = "ativo")
+	private Boolean ativo;
 	
 	@ManyToOne
 	@JoinColumn(name = "id_tipo_cartao")
@@ -40,8 +43,8 @@ public class Cartao extends EntidadeDominio {
 	@ManyToOne
 	@JoinTable(
 			name="cliente_cartao",
-			joinColumns = @JoinColumn(name = "id_cartao", insertable = false, updatable = false),
-			inverseJoinColumns = @JoinColumn(name = "id_cliente", insertable = false, updatable = false)
+			joinColumns = @JoinColumn(name = "id_cartao", updatable = false),
+			inverseJoinColumns = @JoinColumn(name = "id_cliente", updatable = false)
 	)
 	private Cliente cliente;
 	
@@ -78,6 +81,14 @@ public class Cartao extends EntidadeDominio {
 
 	public void setDataValidade(Date dataValidade) {
 		this.dataValidade = dataValidade;
+	}
+
+	public Boolean getAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(Boolean ativo) {
+		this.ativo = ativo;
 	}
 
 	public TipoCartao getTipoCartao() {

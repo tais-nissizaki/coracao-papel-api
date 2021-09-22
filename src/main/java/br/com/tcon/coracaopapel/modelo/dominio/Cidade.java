@@ -13,7 +13,7 @@ public class Cidade extends EntidadeDominio {
 	@Column(name = "descricao")
 	private String descricao;
 	
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "id_estado")
 	private Estado estado;
 

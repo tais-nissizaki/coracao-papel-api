@@ -24,6 +24,9 @@ public class Usuario extends EntidadeDominio {
 	
 	@Transient
 	private String confirmacaoSenha;
+	
+	@Transient
+	private String senhaAntiga;
 
 	@OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Cliente cliente;
@@ -75,6 +78,14 @@ public class Usuario extends EntidadeDominio {
 
 	public void setPermissoes(List<Permissao> permissoes) {
 		this.permissoes = permissoes;
+	}
+
+	public String getSenhaAntiga() {
+		return senhaAntiga;
+	}
+
+	public void setSenhaAntiga(String senhaAntiga) {
+		this.senhaAntiga = senhaAntiga;
 	}
 	
 }

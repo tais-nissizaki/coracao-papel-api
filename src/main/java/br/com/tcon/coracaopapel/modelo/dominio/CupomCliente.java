@@ -13,7 +13,7 @@ import javax.persistence.Table;
 public class CupomCliente extends EntidadeDominio {
 
 	@Column(name = "utilizado")
-	private boolean utilizado;
+	private Boolean utilizado;
 
 	@OneToOne
 	@JoinColumn(name = "id_cliente")
@@ -23,11 +23,11 @@ public class CupomCliente extends EntidadeDominio {
 	@JoinColumn(name = "id_cupom")
 	private Cupom cupom;
 
-	public boolean getUtilizado() {
+	public Boolean getUtilizado() {
 		return utilizado;
 	}
 
-	public void setUtilizado(boolean utilizado) {
+	public void setUtilizado(Boolean utilizado) {
 		this.utilizado = utilizado;
 	}
 

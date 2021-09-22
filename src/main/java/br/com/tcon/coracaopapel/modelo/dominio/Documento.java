@@ -27,7 +27,7 @@ public class Documento extends EntidadeDominio {
 	@JoinColumn(name = "id_tipo_documento")
 	private TipoDocumento tipoDocumento;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, targetEntity = Cliente.class)
 	@JoinColumn(name = "id_cliente")
 	private Cliente cliente;
 
@@ -62,5 +62,7 @@ public class Documento extends EntidadeDominio {
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
 	}
+	
+	
 
 }

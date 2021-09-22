@@ -34,24 +34,30 @@ public class Endereco extends EntidadeDominio {
 	@Column(name = "identificador_endereco")
 	private String identificadorEndereco;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@Column(name = "ativo")
+	private Boolean ativo;
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id_tipo_endereco")
 	private TipoEndereco tipoEndereco;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id_tipo_residencia")
 	private TipoResidencia tipoResidencia;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id_tipo_logradouro")
 	private TipoLogradouro tipoLogradouro;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "id_cidade")
 	private Cidade cidade;
 
-	@ManyToOne
-	@JoinTable(name = "cliente_endereco", joinColumns = @JoinColumn(name = "id_endereco", insertable = false, updatable = false), inverseJoinColumns = @JoinColumn(name = "id_cliente", insertable = false, updatable = false))
+	@ManyToOne(optional = false)
+	@JoinTable(
+			name = "cliente_endereco", 
+			joinColumns = @JoinColumn(name = "id_endereco"), 
+			inverseJoinColumns = @JoinColumn(name = "id_cliente"))
 	private Cliente cliente;
 
 	@Transient
@@ -87,6 +93,14 @@ public class Endereco extends EntidadeDominio {
 
 	public void setCep(String cep) {
 		this.cep = cep;
+	}
+
+	public Boolean getAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(Boolean ativo) {
+		this.ativo = ativo;
 	}
 
 	public TipoEndereco getTipoEndereco() {

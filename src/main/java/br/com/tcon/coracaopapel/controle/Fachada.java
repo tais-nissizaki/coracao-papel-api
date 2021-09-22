@@ -34,6 +34,7 @@ import br.com.tcon.coracaopapel.dao.TipoEnderecoDAO;
 import br.com.tcon.coracaopapel.dao.TipoLogradouroDAO;
 import br.com.tcon.coracaopapel.dao.TipoResidenciaDAO;
 import br.com.tcon.coracaopapel.dao.TipoTelefoneDAO;
+import br.com.tcon.coracaopapel.dao.UsuarioDAO;
 import br.com.tcon.coracaopapel.modelo.dominio.BandeiraCartao;
 import br.com.tcon.coracaopapel.modelo.dominio.Carrinho;
 import br.com.tcon.coracaopapel.modelo.dominio.Cartao;
@@ -59,20 +60,27 @@ import br.com.tcon.coracaopapel.modelo.dominio.TipoEndereco;
 import br.com.tcon.coracaopapel.modelo.dominio.TipoLogradouro;
 import br.com.tcon.coracaopapel.modelo.dominio.TipoResidencia;
 import br.com.tcon.coracaopapel.modelo.dominio.TipoTelefone;
+import br.com.tcon.coracaopapel.modelo.dominio.Usuario;
 import br.com.tcon.coracaopapel.negocio.IStrategy;
 import br.com.tcon.coracaopapel.negocio.carrinho.DesanexarCarrinhoBDStrategy;
 import br.com.tcon.coracaopapel.negocio.carrinho.PreencherClienteCarrinhoStrategy;
 import br.com.tcon.coracaopapel.negocio.carrinho.PreencherDataCadastroStrategy;
 import br.com.tcon.coracaopapel.negocio.carrinho.ValidarQuantidadeDisponivelStrategy;
+import br.com.tcon.coracaopapel.negocio.cartao.AtribuirClienteCartaoStrategy;
+import br.com.tcon.coracaopapel.negocio.cartao.AtribuirDataCadastroCartaoStrategy;
+import br.com.tcon.coracaopapel.negocio.cartao.ValidarDadosCartaoStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.CriptografarSenhaStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.DefinirDataDeCadastro;
 import br.com.tcon.coracaopapel.negocio.cliente.DefinirTipoClienteNovoStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.DefinirTipoUsuarioCliente;
 import br.com.tcon.coracaopapel.negocio.cliente.DesanexarClienteBDStrategy;
+import br.com.tcon.coracaopapel.negocio.cliente.RemoverCartaoInativoStrategy;
+import br.com.tcon.coracaopapel.negocio.cliente.RemoverEnderecoInativoStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.ValidarCPFJaCadastradoStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.ValidarCPFStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.ValidarDadosObrigatoriosStrategy;
 import br.com.tcon.coracaopapel.negocio.cliente.ValidarIdentificadorClientePrenchidoStrategy;
+import br.com.tcon.coracaopapel.negocio.cliente.ValidarSenhaStrategy;
 import br.com.tcon.coracaopapel.negocio.compra.AtribuirDataCadastroCompraStrategy;
 import br.com.tcon.coracaopapel.negocio.compra.CarregarFornecedorCompraStrategy;
 import br.com.tcon.coracaopapel.negocio.compra.CarregarProdutoItemCompraStrategy;
@@ -82,7 +90,11 @@ import br.com.tcon.coracaopapel.negocio.cupom.GerarCodigoCupomStrategy;
 import br.com.tcon.coracaopapel.negocio.cupom_cliente.AtribuirClienteCupomClienteStrategy;
 import br.com.tcon.coracaopapel.negocio.cupom_cliente.DefinirDataDeCadastroCupomCliente;
 import br.com.tcon.coracaopapel.negocio.cupom_cliente.DesanexarCupomClienteBDStrategy;
+import br.com.tcon.coracaopapel.negocio.endereco.AtribuirClienteEnderecoStrategy;
+import br.com.tcon.coracaopapel.negocio.endereco.AtribuirDataCadastroStrategy;
 import br.com.tcon.coracaopapel.negocio.endereco.DesanexarEnderecoBDStrategy;
+import br.com.tcon.coracaopapel.negocio.endereco.ValidarEnderecoStrategy;
+import br.com.tcon.coracaopapel.negocio.endereco.ValidarInativacaoStrategy;
 import br.com.tcon.coracaopapel.negocio.estado.DesanexarEstadoBDStrategy;
 import br.com.tcon.coracaopapel.negocio.fornecedor.DesanexarFornecedorBDStrategy;
 import br.com.tcon.coracaopapel.negocio.pais.DesanexarPaisBDStrategy;
@@ -97,6 +109,12 @@ import br.com.tcon.coracaopapel.negocio.pedido.PrencherDataCadastroStrategy;
 import br.com.tcon.coracaopapel.negocio.pedido.ValidarDadosPagamentoStrategy;
 import br.com.tcon.coracaopapel.negocio.pedido.ValidarEnderecoEntregaPedidoStrategy;
 import br.com.tcon.coracaopapel.negocio.pedido.ValidarProdutosCarrinhoStrategy;
+import br.com.tcon.coracaopapel.negocio.produto.DefinirDataCadastroProdutoStrategy;
+import br.com.tcon.coracaopapel.negocio.produto.DefinirQuantidadeInicialProdutoStrategy;
+import br.com.tcon.coracaopapel.negocio.produto.DefinirStatusInicialProdutoStrategy;
+import br.com.tcon.coracaopapel.negocio.produto.ValidarDadosObrigatoriosProdutoStrategy;
+import br.com.tcon.coracaopapel.negocio.usuario.ValidarConfirmacaoSenhaStrategy;
+import br.com.tcon.coracaopapel.negocio.usuario.ValidarSenhaAtualStrategy;
 
 @Component
 public class Fachada implements IFachada {
@@ -143,7 +161,8 @@ public class Fachada implements IFachada {
 			FornecedorDAO fornecedorDAO,
 			PaisDAO paisDAO,
 			CompraDAO compraDAO,
-			GrupoPrecificacaoDAO grupoPrecificacaoDAO
+			GrupoPrecificacaoDAO grupoPrecificacaoDAO,
+			UsuarioDAO usuarioDAO
 			) {
 		mapaDaos.put(Estado.class.getName(), estadoDAO);
 		mapaDaos.put(Cidade.class.getName(), cidadeDAO);
@@ -170,10 +189,14 @@ public class Fachada implements IFachada {
 		mapaDaos.put(Pais.class.getName(), paisDAO);
 		mapaDaos.put(Compra.class.getName(), compraDAO);
 		mapaDaos.put(GrupoPrecificacao.class.getName(), grupoPrecificacaoDAO);
-			
+		mapaDaos.put(Usuario.class.getName(), usuarioDAO);
+		
+		
+	    ///// CLIENTE
 		List<IStrategy> listaAntesPersistenciaCliente = new ArrayList<>();
 		listaAntesPersistenciaCliente.add(new DefinirTipoClienteNovoStrategy());
 		listaAntesPersistenciaCliente.add(new ValidarDadosObrigatoriosStrategy());
+		listaAntesPersistenciaCliente.add(new ValidarSenhaStrategy());
 		listaAntesPersistenciaCliente.add(new ValidarCPFStrategy());
 		listaAntesPersistenciaCliente.add(new ValidarCPFJaCadastradoStrategy(clienteDAO));
 		listaAntesPersistenciaCliente.add(new DefinirDataDeCadastro());
@@ -193,6 +216,8 @@ public class Fachada implements IFachada {
 
 		List<IStrategy> listaDepoisConsultarCliente = new ArrayList<>();
 		listaDepoisConsultarCliente.add(new DesanexarClienteBDStrategy(entityManager));
+		listaDepoisConsultarCliente.add(new RemoverEnderecoInativoStrategy());
+		listaDepoisConsultarCliente.add(new RemoverCartaoInativoStrategy());
 		mapaDepoisConsultar.put(Cliente.class.getName(), listaDepoisConsultarCliente);
 		
 		List<IStrategy> listaAntesInativarCliente = new ArrayList<>();
@@ -243,9 +268,38 @@ public class Fachada implements IFachada {
 		mapaDepoisConsultar.put(Carrinho.class.getName(), listaDepoisConsultarCarrinho);
 
 		///// ENDERECO
+		List<IStrategy> listaAntesPersistenciaEndereco = new ArrayList<>();
+		listaAntesPersistenciaEndereco.add(new ValidarEnderecoStrategy());
+		listaAntesPersistenciaEndereco.add(new AtribuirDataCadastroStrategy());
+		listaAntesPersistenciaEndereco.add(new AtribuirClienteEnderecoStrategy(clienteDAO));
+		mapaAntesPersistencia.put(Endereco.class.getName(), listaAntesPersistenciaEndereco);
+
+		List<IStrategy> listaAntesAlteracaoEndereco = new ArrayList<>();
+		listaAntesAlteracaoEndereco.add(new ValidarEnderecoStrategy());
+		listaAntesAlteracaoEndereco.add(new AtribuirDataCadastroStrategy());
+		listaAntesAlteracaoEndereco.add(new AtribuirClienteEnderecoStrategy(clienteDAO));
+		mapaAntesAlteracao.put(Endereco.class.getName(), listaAntesAlteracaoEndereco);
+
+		List<IStrategy> listaAntesInativacaoEndereco = new ArrayList<>();
+		listaAntesInativacaoEndereco.add(new ValidarInativacaoStrategy(clienteDAO, enderecoDAO));
+		mapaAntesInativar.put(Endereco.class.getName(), listaAntesInativacaoEndereco);
+		
 		List<IStrategy> listaDepoisConsultarEndereco = new ArrayList<>();
 		listaDepoisConsultarEndereco.add(new DesanexarEnderecoBDStrategy(entityManager));
 		mapaDepoisConsultar.put(Endereco.class.getName(), listaDepoisConsultarEndereco);
+
+		///// CARTAO
+		List<IStrategy> listaAntesPersistenciaCartao = new ArrayList<>();
+		listaAntesPersistenciaCartao.add(new ValidarDadosCartaoStrategy());
+		listaAntesPersistenciaCartao.add(new AtribuirDataCadastroCartaoStrategy());
+		listaAntesPersistenciaCartao.add(new AtribuirClienteCartaoStrategy(clienteDAO));
+		mapaAntesPersistencia.put(Cartao.class.getName(), listaAntesPersistenciaCartao);
+
+		List<IStrategy> listaAntesAlteracaoCartao = new ArrayList<>();
+		listaAntesAlteracaoCartao.add(new ValidarDadosCartaoStrategy());
+		listaAntesAlteracaoCartao.add(new AtribuirDataCadastroCartaoStrategy());
+		listaAntesAlteracaoCartao.add(new AtribuirClienteCartaoStrategy(clienteDAO));
+		mapaAntesAlteracao.put(Cartao.class.getName(), listaAntesAlteracaoCartao);
 
 		///// CUPOM
 		List<IStrategy> listaDepoisConsultarCupom = new ArrayList<>();
@@ -303,6 +357,26 @@ public class Fachada implements IFachada {
 		listaAntesPersistenciaCompra.add(new CarregarFornecedorCompraStrategy(entityManager));
 		listaAntesPersistenciaCompra.add(new CarregarProdutoItemCompraStrategy(entityManager));
 		mapaAntesPersistencia.put(Compra.class.getName(), listaAntesPersistenciaCompra);
+		
+		List<IStrategy> listaAntesAlteracaoUsuario = new ArrayList<>();
+		listaAntesAlteracaoUsuario.add(new ValidarSenhaAtualStrategy(clienteDAO));
+		listaAntesAlteracaoUsuario.add(new ValidarConfirmacaoSenhaStrategy());
+		listaAntesAlteracaoUsuario.add(new ValidarSenhaStrategy());
+		listaAntesAlteracaoUsuario.add(new CriptografarSenhaStrategy());
+		mapaAntesAlteracao.put(Usuario.class.getName(), listaAntesAlteracaoUsuario);
+
+		
+		//// PRODUTO
+		List<IStrategy> listaAntesPersistenciaProduto = new ArrayList<>();
+		listaAntesPersistenciaProduto.add(new ValidarDadosObrigatoriosProdutoStrategy());
+		listaAntesPersistenciaProduto.add(new DefinirDataCadastroProdutoStrategy());
+		listaAntesPersistenciaProduto.add(new DefinirStatusInicialProdutoStrategy());
+		listaAntesPersistenciaProduto.add(new DefinirQuantidadeInicialProdutoStrategy());
+		mapaAntesPersistencia.put(Produto.class.getName(), listaAntesPersistenciaProduto);
+
+		List<IStrategy> listaAntesAlteracaoProduto = new ArrayList<>();
+		listaAntesAlteracaoProduto.add(new ValidarDadosObrigatoriosProdutoStrategy());
+		mapaAntesAlteracao.put(Produto.class.getName(), listaAntesAlteracaoProduto);
 		
 	}
 

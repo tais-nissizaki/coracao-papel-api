@@ -7,11 +7,13 @@ import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import br.com.tcon.coracaopapel.modelo.dominio.Cartao;
+import br.com.tcon.coracaopapel.modelo.dominio.Endereco;
 import br.com.tcon.coracaopapel.modelo.dominio.EntidadeDominio;
 
 @Repository
@@ -21,21 +23,42 @@ public class CartaoDAO implements IDAO {
 	private EntityManager entityManager;
 
 	@Override
+	@Transactional
 	public boolean salvar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-		return false;
+		Cartao cartao = (Cartao) entidade;
+		try {
+			entityManager.merge(cartao);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	@Override
+	@Transactional
 	public boolean alterar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			entityManager.merge(entidade);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
-	@Override
+	@Override 
+	@Transactional
 	public boolean inativar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			Cartao cartao = entityManager.find(Cartao.class, entidade.getId());
+			cartao.setAtivo(false);
+			entityManager.merge(cartao);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -62,6 +85,16 @@ public class CartaoDAO implements IDAO {
 			}
 			queryString.append("cl.id = :idCliente ");
 			parametros.put("idCliente", cartao.getCliente().getId());
+		}
+		if (cartao.getAtivo() != null) {
+			if (!adicionouWhere) {
+				queryString.append("WHERE ");
+				adicionouWhere = true;
+			} else {
+				queryString.append("AND ");
+			}
+			queryString.append("c.ativo = :ativo ");
+			parametros.put("ativo", cartao.getAtivo());
 		}
 		
 		
